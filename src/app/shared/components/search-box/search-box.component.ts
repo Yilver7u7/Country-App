@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { debounceTime, Subject } from 'rxjs';
 
 @Component({
   selector: 'shared-search-box',
@@ -6,6 +7,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styles: ``
 })
 export class SearchBoxComponent {
+
+  // private debouncer: Subject<string> = new Subject<string>();
 
   @Input()
   public placeholder: string = '';
