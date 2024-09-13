@@ -6,9 +6,11 @@ import { debounceTime, Subject } from 'rxjs';
   templateUrl: './search-box.component.html',
   styles: ``
 })
-export class SearchBoxComponent {
+export class SearchBoxComponent implements OnInit {
 
   // private debouncer: Subject<string> = new Subject<string>();
+
+  private debouncer: Subject<string> = new Subject<string>();
 
   @Input()
   public placeholder: string = '';
@@ -16,8 +18,27 @@ export class SearchBoxComponent {
   @Output()
   public onValue = new EventEmitter<string>();
 
+  @Output()
+  public onDebouncer = new EventEmitter<string>();
+
+
+  ngOnInit(): void {
+    this.debouncer
+    .pipe(
+      debounceTime(300)
+    )
+    .subscribe( value => {
+      this.onDebouncer.emit(value)
+      }
+    )
+  }
+
   emitValue(value: string): void {
     this.onValue.emit(value);
+  }
+
+  onKeyPress( search: string ){
+    this.debouncer.next(search);
   }
 
 }
