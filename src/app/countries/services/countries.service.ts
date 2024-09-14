@@ -7,7 +7,9 @@ import { Region } from '../interfaces/Region.type';
 
 @Injectable({providedIn: 'root'})
 export class CountriesService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    this.loadFromLocalStorage();
+  }
 
   private apiUrl: string = 'https://restcountries.com/v3.1'
 
@@ -16,6 +18,18 @@ export class CountriesService {
     byCountries: { search: '', countries: [] },
     byRegion:    { region: '', countries: [] }
   };
+
+  // Nos permite almacenar la informacion en el localStorage
+  private saveToLocalStorage(): void {
+    localStorage.setItem( 'cahceStore', JSON.stringify( this.cacheStore))
+  }
+
+  // Validacion para saber si hay memorai en el localStorage
+  private loadFromLocalStorage(): void {
+    if (!localStorage.getItem( 'cahceStore' ))return
+
+    this.cacheStore = JSON.parse(localStorage.getItem( 'cahceStore')!)
+  }
 
 
   private getCountriesRequest( url: string ): Observable<Country[]> {
@@ -42,7 +56,8 @@ export class CountriesService {
     const url = `${this.apiUrl}/capital/${queryString}`;
     return this.getCountriesRequest( url )
     .pipe(
-      tap( countries => this.cacheStore.byCapital = {search: queryString, countries})
+      tap( countries => this.cacheStore.byCapital = {search: queryString, countries}),
+      tap( () => this.saveToLocalStorage())
     )
 
     // return this.http.get<Country[]>( url )
@@ -56,7 +71,8 @@ export class CountriesService {
     const url = `${this.apiUrl}/name/${queryString}`;
     return this.getCountriesRequest( url )
     .pipe(
-      tap( countries => this.cacheStore.byCountries = { search: queryString, countries})
+      tap( countries => this.cacheStore.byCountries = { search: queryString, countries}),
+      tap( () => this.saveToLocalStorage())
     )
 
     // return this.http.get<Country[]>( url )
@@ -70,7 +86,8 @@ export class CountriesService {
       const url = `${this.apiUrl}/region/${queryString}`;
       return this.getCountriesRequest( url )
       .pipe(
-      tap( countries => this.cacheStore.byRegion = { region: queryString, countries})
+      tap( countries => this.cacheStore.byRegion = { region: queryString, countries}),
+      tap( () => this.saveToLocalStorage())
     )
 
   //   return this.http.get<Country[]>( url )
