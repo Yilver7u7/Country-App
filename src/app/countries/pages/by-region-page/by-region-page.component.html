@@ -2,15 +2,22 @@
 <hr>
 <div class="row">
   <div class="col">
-    <shared-search-box
-    (onValue)="searchBoxByRegion($event)"
-    placeholder="Buscar por Region"></shared-search-box>
+    <!-- <shared-search-box
+    (onDebouncer)="searchBoxByRegion($event)"
+    placeholder="Buscar por Region"></shared-search-box> -->
+    <button *ngFor="let region of regions"
+    class="btn mx-2"
+    [ngClass]="{'btn-outline-primary': selectionRegion == region}"
+    (click)="searchBoxByRegion(region)">
+      {{region}}
+    </button>
   </div>
 </div>
 
 <hr>
 <div class="row">
   <div class="col">
+    <shared-loading-spinner *ngIf="isLoading"></shared-loading-spinner>
     <!-- Tabla -->
      <countries-table [countries]="countries"></countries-table>
   </div>
