@@ -2,12 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, delay, map, Observable, of, tap } from 'rxjs';
 import { Country } from '../interfaces/country';
+import { CacheSearch } from '../interfaces/cache-search';
 
 @Injectable({providedIn: 'root'})
 export class CountriesService {
   constructor(private http: HttpClient) { }
 
   private apiUrl: string = 'https://restcountries.com/v3.1'
+
+  public cacheStore: CacheSearch = {
+    byCapital:   { search: '', countries: [] },
+    byCountries: { search: '', countries: [] },
+    byRegion:    { region: '', countries: [] }
+  };
 
 
   private getCountriesRequest( url: string ): Observable<Country[]> {
@@ -33,6 +40,9 @@ export class CountriesService {
   searchCapital( queryString:string ):Observable<Country[]>{
     const url = `${this.apiUrl}/capital/${queryString}`;
     return this.getCountriesRequest( url )
+    .pipe(
+      tap( countries => this.cacheStore.byCapital = {search: queryString, countries: countries})
+    )
 
     // return this.http.get<Country[]>( url )
     // .pipe(
